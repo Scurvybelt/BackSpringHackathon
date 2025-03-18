@@ -19,6 +19,20 @@ public class TokenReqRes {
 
     private String token;
     private String expirationTime;
+    private long remainingTime;
+
+    public TokenReqRes(String username, String token) {
+        this.username = username;
+        this.token = token;
+    }
+
+    public long getRemainingTime() {
+        return remainingTime;
+    }
+
+    public void setRemainingTime(long remainingTime) {
+        this.remainingTime = remainingTime;
+    }
 
 
     public String getExpirationTime() {
@@ -52,6 +66,8 @@ public class TokenReqRes {
     public void setUsername(String username) {
         this.username = username;
     }
+
+
 
     public String getUserName (){
         return this.username;

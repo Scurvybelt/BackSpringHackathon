@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
+
+
 @Controller
 @RequestMapping
 public class OurController {
@@ -23,6 +25,7 @@ public class OurController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    //Register
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody Users user){
         String hashedPassword = bCryptPasswordEncoder.encode(user.getPassword());
@@ -33,6 +36,7 @@ public class OurController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User Not Saved, Internal Server Error. Please try Again ");
     }
 
+    //Login
     @PostMapping("/generate-token")
     public ResponseEntity<Object> generateToken(@RequestBody TokenReqRes tokenReqRes){
         Users databaseUser = userRepository.findByUsername(tokenReqRes.getUserName());
@@ -41,13 +45,17 @@ public class OurController {
         }
         if(new BCryptPasswordEncoder().matches(tokenReqRes.getPassword(), databaseUser.getPassword())){
             String token = jwtTokenUtil.generateToken(tokenReqRes.getUserName());
-            tokenReqRes.setToken(token);
-            tokenReqRes.setExpirationTime("60 Sec");
-            return ResponseEntity.ok(tokenReqRes);
+            long remainingTime = jwtTokenUtil.getRemainingTime(token);
+            TokenReqRes response = new TokenReqRes(tokenReqRes.getUserName(), token);
+            response.setRemainingTime(remainingTime);
+            response.setExpirationTime("24 hours");
+            return ResponseEntity.ok(response);
         }else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password Doesn't Match. Verify");
         }
     }
+
+
     @PostMapping("/validate-token")
     public ResponseEntity<Object> validateToken(@RequestBody TokenReqRes tokenReqRes){
         return ResponseEntity.ok(jwtTokenUtil.validateToken(tokenReqRes.getToken()));

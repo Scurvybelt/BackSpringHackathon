@@ -13,8 +13,10 @@ import java.util.Date;
 @Component
 public class JwtTokenUtil {
 
+
+
     private final Key secreteKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-    private static final long EXPIRATION_TIME = 60000; //1 min
+    private static final long EXPIRATION_TIME = 86400000; //1 min
 
     public String generateToken(String username) {
         Date now = new Date();
@@ -39,6 +41,22 @@ public class JwtTokenUtil {
         } catch (JwtException | IllegalArgumentException e) {
             // Token is invalid (failed parsing or verification)
             return "invalid token";
+        }
+    }
+
+    public long getRemainingTime(String token) {
+        try {
+            Date expirationDate = Jwts.parserBuilder()
+                    .setSigningKey(secreteKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration();
+            return expirationDate.getTime() - System.currentTimeMillis();
+        } catch (ExpiredJwtException ex) {
+            return 0; // Token is expired
+        } catch (JwtException | IllegalArgumentException e) {
+            return -1; // Token is invalid
         }
     }
 }
