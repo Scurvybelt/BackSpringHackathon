@@ -11,8 +11,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 
 @Controller
@@ -31,7 +32,9 @@ public class OurController {
         String hashedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
         if(userRepository.save(user).getId() > 0){
-            return ResponseEntity.ok("User registered successfully");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User registered successfully");
+            return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User Not Saved, Internal Server Error. Please try Again ");
     }
@@ -49,6 +52,7 @@ public class OurController {
             TokenReqRes response = new TokenReqRes(tokenReqRes.getUserName(), token);
             response.setRemainingTime(remainingTime);
             response.setExpirationTime("24 hours");
+
             return ResponseEntity.ok(response);
         }else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password Doesn't Match. Verify");

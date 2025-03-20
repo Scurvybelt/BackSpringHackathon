@@ -16,7 +16,6 @@ public class TokenReqRes {
 
     private String username;
     private String password;
-
     private String token;
     private String expirationTime;
     private long remainingTime;
