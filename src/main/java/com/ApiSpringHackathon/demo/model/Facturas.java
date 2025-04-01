@@ -43,10 +43,14 @@ public class Facturas {
     private String usoCfdi;
 
 
-    @Lob
+    @Lob // Para manejar datos binarios grandes (como XML)
     private String xmlCfdi;
 
     @Lob // Para manejar datos binarios grandes (como PDF)
     private byte[] pdfCfdi; // PDF del CFDI
 
+
+    public String getXmlCfdi() {
+        return xmlCfdi;
+    }
 }
